@@ -1,0 +1,4 @@
+In this code, I have done one modification.
+I will set the bending modulus of the material to be 0.05 first and apply PSO to get to somewhere close to the right answer
+
+Then I will adiabatically decrease the bending modulus of the material, and start with the PSO solution for 0.05 bending to see if the right answer will stay there
