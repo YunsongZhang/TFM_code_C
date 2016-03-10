@@ -1,4 +1,7 @@
-In this code, I have done one modification.
-I will set the bending modulus of the material to be 0.05 first and apply PSO to get to somewhere close to the right answer
+In this code, I have done the following attempt
 
-Then I will adiabatically decrease the bending modulus of the material, and start with the PSO solution for 0.05 bending to see if the right answer will stay there
+I let the bending modulus to be 0.01 at first and let the network relax
+Then I applied PSO to predict the displacements, assuing bending modulus to be 0.05
+Then I adiabatically adjust the bending modulus little by little from 0.05 to 0.01
+
+I will see what will happen

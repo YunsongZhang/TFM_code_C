@@ -1,6 +1,6 @@
 #include <math.h>               /* standard include files */
 #include <gsl/gsl_rng.h>
-#include "./mypsov1.h"
+#include "./mypsov2.h"
 #include <float.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -28,7 +28,7 @@
 					psum[j]=sum;}
 #define SWAP(a,b) {swap=(a);(a)=(b);(b)=swap;}
 
-#define _ADIABATIC_
+//#define _ADIABATIC_
 
 
 void                            /* function prototypes */
@@ -90,15 +90,17 @@ int main()
   FILE *pFileDisSet,*pFileDisPredicted,*pFileLinks,*pFileLinks0,*pFileLinks1;
   int numPt,indPt,i,j;
   double dis,xold,yold;
+  double noise = 0.0; // noise of the magnitude on the netowrk deformation
   
   percolation=0.66;
   printf("percolation p=%.2f\n",percolation);
   unsigned int randseed = (unsigned)time(NULL);
   printf("Random number seed: %d\n",randseed);
+  printf(" %.2f %% noise will be added to the network deformation\n",100.0*noise);
   srand48(randseed);
 //  srand48(1467);
   stiffness=1.0;
-  kappa=KAPPA0;
+  kappa=0.05;
   printf("bending coefficient kappa=%f\n",kappa);
   A_lat=1.0;
   Nx=59;
@@ -204,6 +206,11 @@ CellContraction(Xcenter,Ycenter,LinkedPts,numBoundaryPts,
 
   X_observations=(double*)malloc(num_atoms*sizeof(double));
   Y_observations=(double*)malloc(num_atoms*sizeof(double));
+  for( i = 0 ; i < num_atoms ; i++)
+  {
+	  X_observations[i] *= (1.0+noise*2.0*(drand48()-0.5));
+	  Y_observations[i] *= (1.0+noise*2.0*(drand48()-0.5));
+  }
   SaveVector(X,X_observations,num_atoms);
   SaveVector(Y,Y_observations,num_atoms);
   angle_known=(double*)malloc(numBoundaryPts*sizeof(double));
@@ -247,6 +254,8 @@ CellContraction(Xcenter,Ycenter,LinkedPts,numBoundaryPts,
     struct timespec start,finish;
     double elapsed;
     clock_gettime(CLOCK_MONOTONIC,&start);
+
+
 
     pso_solve(obj_fun,NULL,&solution,&settings);
 
@@ -316,14 +325,14 @@ CellContraction(Xcenter,Ycenter,LinkedPts,numBoundaryPts,
   fclose(pFileLinks1);
   
 #ifdef _ADIABATIC_
-  if ( solution.error > settings.goal*10)
+  if ( solution.error > settings.goal*25.0)
   {
 	  printf(" PSO fails, no need to go further!\n");
 	  exit(-1);
   }
   printf("\n \n \n \n \n ");
   printf("From now on, I adiabatically decrease the bending modulus of the material!\n");
-  int num_AdiabaticSteps = 40,numStep;
+  int num_AdiabaticSteps = 49,numStep;
   double delta_kappa = 0.001;
   FILE *pFileRelax,*pFilePredicct;
   char filename[50];
@@ -367,6 +376,11 @@ CellContraction(Xcenter,Ycenter,LinkedPts,numBoundaryPts,
 	   conjugate_gradient();
 	   namelength = sprintf(filename,"./data/relax_%d.txt",numPt);
 	   PlotNet(filename);
+           for( i = 0 ; i < num_atoms ; i++)
+           {
+                   X_observations[i] *= (1.0+noise*2.0*(drand48()-0.5));
+                   Y_observations[i] *= (1.0+noise*2.0*(drand48()-0.5));
+           }
 	   SaveVector(X,X_observations,num_atoms);
 	   SaveVector(Y,Y_observations,num_atoms);
 
@@ -440,9 +454,9 @@ CellContraction(Xcenter,Ycenter,LinkedPts,numBoundaryPts,
 	     qsort(abs_deviation_percentage,numBoundaryPts,sizeof(double),compare_double);
 
 	     printf("\n\n prediction results evaluation:\n");
-	     printf(" largest deviation %.2f %%, smallest deviation %.2f %%, median deviation %.2f %%\n",
-			     abs_deviation_percentage[0],abs_deviation_percentage[numBoundaryPts-1],
-			     abs_deviation_percentage[numBoundaryPts/2-1] );
+	     printf(" smallest deviation %.2f %%, largest deviation %.2f %%, median deviation %.2f %%\n",
+			     abs_deviation_percentage[0]*100.0,abs_deviation_percentage[numBoundaryPts-1]*100.0,
+			     abs_deviation_percentage[numBoundaryPts/2-1]*100.0 );
 	     printf("\n\n");
 
 
