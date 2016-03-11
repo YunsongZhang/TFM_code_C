@@ -531,7 +531,8 @@ void pso_solve(pso_obj_fun_t obj_fun, void *obj_fun_params,
 
     /* if in this round of PSO, goal is not achieved, we will start afresh */
 
-    settings->numAttempt +=1;
+    settings->numAttempt += 1;
+    settings->numstalls = 0 ;
  } // end of while loop 
 
     // free RNG??

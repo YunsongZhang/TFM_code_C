@@ -21,14 +21,14 @@
 #define EPS 1.0e-10
 #define KAPPA0 0.05
 
-#define NMAX 5000
+#define NMAX 10000
 #define GET_PSUM \
 					for (j=0;j<ndim;j++) {\
 					for (sum=0.0,i=0;i<mpts;i++) sum += p[i][j];\
 					psum[j]=sum;}
 #define SWAP(a,b) {swap=(a);(a)=(b);(b)=swap;}
 
-//#define _ADIABATIC_
+#define _ADIABATIC_
 
 
 void                            /* function prototypes */
@@ -90,7 +90,7 @@ int main()
   FILE *pFileDisSet,*pFileDisPredicted,*pFileLinks,*pFileLinks0,*pFileLinks1;
   int numPt,indPt,i,j;
   double dis,xold,yold;
-  double noise = 0.0; // noise of the magnitude on the netowrk deformation
+  double noise = 0.02; // noise of the magnitude on the netowrk deformation
   
   percolation=0.66;
   printf("percolation p=%.2f\n",percolation);
@@ -354,7 +354,7 @@ CellContraction(Xcenter,Ycenter,LinkedPts,numBoundaryPts,
 
   for( numStep = 0 ; numStep <= num_AdiabaticSteps ; numStep++)
   {
-	  kappa = KAPPA0 - numStep*delta_kappa;
+	  kappa -= delta_kappa * numStep; 
 	  printf("#Adiabatic Decrease = %d , bending modulus = %.4f\n",numStep, kappa);
 
 
@@ -429,6 +429,12 @@ CellContraction(Xcenter,Ycenter,LinkedPts,numBoundaryPts,
 		    printf(" B%d = %f  , B%d_pred=%f  \n ",i,Bcoef[i],i,pts_simplex[0][i+Fourier_Orders]);
 	    }
 	    printf("\n \n \n \n");
+
+	    if( values_simplex[0] < 1.0e-6)
+	    {
+		    printf("Victory belongs to us!\n");
+		    exit(0);
+	    }
 
 
 	    // update A_latest and B_latest

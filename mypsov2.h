@@ -23,10 +23,7 @@
 
 // CONSTANTS
 #define PSO_MAX_SIZE 100 // max swarm size
-#define PSO_INERTIA 0.7298 // default value of w (see clerc02)
-
-
-// === NEIGHBORHOOD SCHEMES ===
+#define PSO_INERTIA 0.7298 // default value of w (see clerc02) // === NEIGHBORHOOD SCHEMES ===
 
 // global best topology
 #define PSO_NHOOD_GLOBAL 0
