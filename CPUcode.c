@@ -202,6 +202,15 @@ CellContraction(Xcenter,Ycenter,LinkedPts,numBoundaryPts,
  // free(contract_dis);
  // stretch(Xcenter,Ycenter,CellRadius0,shrink_percentage);
   conjugate_gradient();
+  setVisible(Xcenter,Ycenter,15.0);
+  int num_VisiblePts = 0;
+  for( i = 0 ; i < num_atoms ; i++)
+  {
+	  num_VisiblePts += (isVisible[i]==1)?1:0;
+  }
+  printf("\n\n\nOf all %d nodes, %d are visible\n\n\n",num_atoms,num_VisiblePts);
+
+  
   PlotNet("./data/RelaxedNet.txt");
 
   X_observations=(double*)malloc(num_atoms*sizeof(double));
@@ -354,7 +363,7 @@ CellContraction(Xcenter,Ycenter,LinkedPts,numBoundaryPts,
 
   for( numStep = 0 ; numStep <= num_AdiabaticSteps ; numStep++)
   {
-	  kappa -= delta_kappa * numStep; 
+	  kappa -= (numStep==0)?0.0:delta_kappa;
 	  printf("#Adiabatic Decrease = %d , bending modulus = %.4f\n",numStep, kappa);
 
 
