@@ -100,7 +100,7 @@ int main()
   srand48(randseed);
 //  srand48(1467);
   stiffness=1.0;
-  kappa=0.05;
+  kappa=0.001;
   printf("bending coefficient kappa=%f\n",kappa);
   A_lat=1.0;
   Nx=59;
@@ -121,9 +121,9 @@ int main()
 #endif
   PlotNet("./data/BlankNet.txt");
   initial_cell(Xcenter,Ycenter,CellRadius0);
-  setVisible(Xcenter,Ycenter,100.0); // all visible
+  //setVisible(Xcenter,Ycenter,100.0); // all visible
 #ifdef CLOSE_NEIGHBOR_ONLY
-  setVisible(Xcenter,Ycenter,15.0);
+  //setVisible(Xcenter,Ycenter,15.0);
 #endif
   PlotNet("./data/unrelaxedNet.txt");
   X_initial=(double*)malloc(num_atoms*sizeof(double));
@@ -245,6 +245,7 @@ CellContraction(Xcenter,Ycenter,LinkedPts,numBoundaryPts,
       settings.goal=2.0e-2;
       settings.steps= 1000;
       settings.w_min=1e-4;
+      settings.maxAttempts = 10;
       settings.x_min=(double*)malloc(settings.dim*sizeof(double));
       settings.x_max=(double*)malloc(settings.dim*sizeof(double));
       
@@ -254,6 +255,10 @@ CellContraction(Xcenter,Ycenter,LinkedPts,numBoundaryPts,
 	settings.x_min[num]=-3.5;
 	settings.x_max[num]=3.5;
       }
+
+      printf(" PSO will take a maximum of %d attempts!\n",settings.maxAttempts);
+
+      
 
    
   pso_result_t solution;
@@ -334,14 +339,15 @@ CellContraction(Xcenter,Ycenter,LinkedPts,numBoundaryPts,
   fclose(pFileLinks1);
   
 #ifdef _ADIABATIC_
-  if ( solution.error > settings.goal*25.0)
+  if ( solution.error > settings.goal*15.0)
   {
 	  printf(" PSO fails, no need to go further!\n");
-	  exit(-1);
+	  printf(" We will continue!\n");
+	  //exit(-1);
   }
   printf("\n \n \n \n \n ");
   printf("From now on, I adiabatically decrease the bending modulus of the material!\n");
-  int num_AdiabaticSteps = 49,numStep;
+  int num_AdiabaticSteps = 0,numStep;
   double delta_kappa = 0.001;
   FILE *pFileRelax,*pFilePredicct;
   char filename[50];
@@ -1598,8 +1604,12 @@ void setVisible(double Xcenter,double Ycenter,double VisibleRadius)
 	for(i = 0; i < num_atoms; i++)
 	{
 		dis = sqrt( (X[i]-Xcenter)*(X[i]-Xcenter)+(Y[i]-Ycenter)*(Y[i]-Ycenter) );
-		isVisible[i] = (dis<VisibleRadius)?1:0;
+		isVisible[i] = (  (dis<VisibleRadius)  )?1:0;
 	}
+	printf("Setting Visible nodes!\n");
+	printf(" Nodes outside a range of %.1f will be invisible\n",VisibleRadius);
+//	printf(" Nodes are diluted : every other node within the range will be invisible!\n");
+	printf("  \n\n\n\n");
 }
 
 

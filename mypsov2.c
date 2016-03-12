@@ -264,7 +264,7 @@ void pso_set_default_settings(pso_settings_t *settings) {
 
     settings->maxStalls = 25;
     settings->numAttempt = 1;
-    settings->maxAttempts = 4;
+    settings->maxAttempts = 6;
 
     settings->rng = NULL;
     settings->seed = time(0);
@@ -352,6 +352,8 @@ void pso_solve(pso_obj_fun_t obj_fun, void *obj_fun_params,
 
 
     int OK_to_finish = 0;
+    double best_result_sofar = DBL_MAX;
+    double *best_solution_sofar = (double*)malloc(settings->dim*sizeof(double)); 
 
  while( ( settings->numAttempt <= settings->maxAttempts )  && ( OK_to_finish == 0 ) )
  {
@@ -417,6 +419,12 @@ void pso_solve(pso_obj_fun_t obj_fun, void *obj_fun_params,
 		if (settings->print_every)
 		{
 			printf("Abandoned! step %d error=%.3e) :-(\n",step,solution->error);
+			if ( solution->error < best_result_sofar )
+			{
+				best_result_sofar = solution->error;
+				memmove((void*)best_solution_sofar, (void*)solution->gbest,
+						sizeof(double)*settings->dim);
+			}
 			break;
 		}
 	}
@@ -534,6 +542,16 @@ void pso_solve(pso_obj_fun_t obj_fun, void *obj_fun_params,
     settings->numAttempt += 1;
     settings->numstalls = 0 ;
  } // end of while loop 
+
+
+   if( OK_to_finish == 0)
+   {
+	   solution->error = best_result_sofar;
+	   memcpy((void*)solution->gbest , (void*)best_solution_sofar,
+			   settings->dim * sizeof(double));
+   }
+
+    free(best_solution_sofar);
 
     // free RNG??
     if (free_rng)

@@ -5,3 +5,10 @@ Then I applied PSO to predict the displacements, assuing bending modulus to be 0
 Then I adiabatically adjust the bending modulus little by little from 0.05 to 0.01
 
 I will see what will happen
+
+
+In later versions of this code, I have modified the implementation of PSO algorithm.
+
+The optimization will start afresh when it gets stuck.Also, a downhill simplex algorithm is followed!
+
+
