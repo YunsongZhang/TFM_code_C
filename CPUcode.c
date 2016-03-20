@@ -1,6 +1,6 @@
 #include <math.h>               /* standard include files */
 #include <gsl/gsl_rng.h>
-#include "./mypsov2.h"
+#include "./mypsov3.h"
 #include <float.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -147,6 +147,8 @@ int main()
   double *contract_angle = (double*)malloc(numBoundaryPts*sizeof(double));
   
   Fourier_Orders = 4;
+  printf("We set degrees of freedom to be %d \n ",2*Fourier_Orders+1);
+
 
   double *Acoef = (double*)malloc((Fourier_Orders+1)*sizeof(double));
   double *Bcoef = (double*)malloc((Fourier_Orders+1)*sizeof(double));
@@ -243,9 +245,9 @@ CellContraction(Xcenter,Ycenter,LinkedPts,numBoundaryPts,
       settings.x_lo=-2.0;
       settings.x_hi=2.0;
       settings.goal=2.0e-2;
-      settings.steps= 1000;
+      settings.steps= 100;
       settings.w_min=1e-4;
-      settings.maxAttempts = 10;
+      settings.maxAttempts = 15;
       settings.x_min=(double*)malloc(settings.dim*sizeof(double));
       settings.x_max=(double*)malloc(settings.dim*sizeof(double));
       
@@ -1604,11 +1606,11 @@ void setVisible(double Xcenter,double Ycenter,double VisibleRadius)
 	for(i = 0; i < num_atoms; i++)
 	{
 		dis = sqrt( (X[i]-Xcenter)*(X[i]-Xcenter)+(Y[i]-Ycenter)*(Y[i]-Ycenter) );
-		isVisible[i] = (  (dis<VisibleRadius)  )?1:0;
+		isVisible[i] = (  (dis<VisibleRadius) && ( i%2==1)  )?1:0;
 	}
 	printf("Setting Visible nodes!\n");
 	printf(" Nodes outside a range of %.1f will be invisible\n",VisibleRadius);
-//	printf(" Nodes are diluted : every other node within the range will be invisible!\n");
+	printf(" Nodes are diluted : every other node within the range will be invisible!\n");
 	printf("  \n\n\n\n");
 }
 

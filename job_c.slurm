@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH -A ctbp-levine
-#SBATCH --job-name=PSOv2vis15
+#SBATCH --job-name=Sunday
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1
 #SBATCH --time=48:00:00

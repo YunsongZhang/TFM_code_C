@@ -25,7 +25,7 @@
 
 #include <gsl/gsl_rng.h>
 
-#include "mypsov2.h"
+#include "mypsov3.h"
 
 
 
@@ -395,7 +395,7 @@ void pso_solve(pso_obj_fun_t obj_fun, void *obj_fun_params,
     // initialize omega using standard value
     w = PSO_INERTIA;
     // RUN ALGORITHM
-    for (step=0; step<settings->steps; step++) {
+    for (step=0; step<=settings->steps; step++) {
 	// update current step
 	settings->step = step;
 	// update inertia weight
@@ -413,10 +413,10 @@ void pso_solve(pso_obj_fun_t obj_fun, void *obj_fun_params,
 	    break;
 	}
 
-	if ( settings->numstalls > settings->maxStalls )
+	if (  (settings->numstalls > settings->maxStalls) || (step == settings->steps)  )
 	{
 		// abandoned!
-		if (settings->print_every)
+		if (settings->print_every) 
 		{
 			printf("Abandoned! step %d error=%.3e) :-(\n",step,solution->error);
 			if ( solution->error < best_result_sofar )
