@@ -357,6 +357,7 @@ void pso_solve(pso_obj_fun_t obj_fun, void *obj_fun_params,
 
  while( ( settings->numAttempt <= settings->maxAttempts )  && ( OK_to_finish == 0 ) )
  {
+	 printf(" \n\n PSO attempt #%d!\n",settings->numAttempt);
 
     // INITIALIZE SOLUTION
     solution->error = DBL_MAX;

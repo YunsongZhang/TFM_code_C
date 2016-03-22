@@ -146,7 +146,7 @@ int main()
   double *contract_dis = (double*)malloc(numBoundaryPts*sizeof(double));
   double *contract_angle = (double*)malloc(numBoundaryPts*sizeof(double));
   
-  Fourier_Orders = 4;
+  Fourier_Orders = 6;
   printf("We set degrees of freedom to be %d \n ",2*Fourier_Orders+1);
 
 
@@ -278,7 +278,7 @@ CellContraction(Xcenter,Ycenter,LinkedPts,numBoundaryPts,
     clock_gettime(CLOCK_MONOTONIC,&finish);
     elapsed = (finish.tv_sec-start.tv_sec);
     elapsed+= (finish.tv_nsec-start.tv_nsec)*1.0e-9;
-    printf(" Particle Swarm Optimization time=%lf sec\n",elapsed);
+    printf(" Particle Swarm Optimization time=%lf hours\n",elapsed/3600.0);
 
 
     printf("A=%f,Apredicted=%f\n",Acoef[0],*solution.gbest);
@@ -341,6 +341,9 @@ CellContraction(Xcenter,Ycenter,LinkedPts,numBoundaryPts,
   fclose(pFileLinks1);
   
 #ifdef _ADIABATIC_
+
+  printf("\n\n\n PSO finished! goal=%e, actual error=%e\n",settings.goal,solution.error); 
+
   if ( solution.error > settings.goal*15.0)
   {
 	  printf(" PSO fails, no need to go further!\n");
@@ -372,7 +375,7 @@ CellContraction(Xcenter,Ycenter,LinkedPts,numBoundaryPts,
   for( numStep = 0 ; numStep <= num_AdiabaticSteps ; numStep++)
   {
 	  kappa -= (numStep==0)?0.0:delta_kappa;
-	  printf("#Adiabatic Decrease = %d , bending modulus = %.4f\n",numStep, kappa);
+	 // printf("#Adiabatic Decrease = %d , bending modulus = %.4f\n",numStep, kappa);
 
 
 	  // recover the net to the unstretched state
@@ -1606,11 +1609,11 @@ void setVisible(double Xcenter,double Ycenter,double VisibleRadius)
 	for(i = 0; i < num_atoms; i++)
 	{
 		dis = sqrt( (X[i]-Xcenter)*(X[i]-Xcenter)+(Y[i]-Ycenter)*(Y[i]-Ycenter) );
-		isVisible[i] = (  (dis<VisibleRadius) && ( i%2==1)  )?1:0;
+		isVisible[i] = (  (dis<VisibleRadius)  )?1:0;
 	}
 	printf("Setting Visible nodes!\n");
 	printf(" Nodes outside a range of %.1f will be invisible\n",VisibleRadius);
-	printf(" Nodes are diluted : every other node within the range will be invisible!\n");
+	// printf(" Nodes are diluted : every other node within the range will be invisible!\n");
 	printf("  \n\n\n\n");
 }
 
